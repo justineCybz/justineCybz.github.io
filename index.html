@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>HTB-UNI-CTF Block Write-up</title>
+<title>HTB UNI CTF Nov 2020 Block Write-up</title>
 <style type="text/css">
 @media screen and (max-width:600px){
 #container {
@@ -23,6 +23,9 @@ margin-left:25%;
 font-size:12pt;
 }
 }
+h {
+text-align:center;
+}
 . {
 
 }
@@ -32,21 +35,21 @@ margin-top:2%;
 margin-bottom:3%;
 }
 #container a:hover{
-color:#fff;
+color:#9CF;
 }
 #container {
-color:#99A;
+color:#DDE;
 font-family:consolas,courier new, lucida console;
 text-align:center;
 
 }
 #container b, i, a:link, a:visited, a:active{
-color:#CCD;
+color:#FFF;
 }
 #container img {
 padding:20px;
 max-width:90%;
-opacity: 0.5;
+opacity: 0.8;
 }
 #container img:hover {
 opacity: 1;
@@ -59,12 +62,16 @@ text-align:justify;
 
 <body>
 <div id="container">
-
+<h1>HTB UNI CTF 2020</h1>
+<h2>Hardware Challenge: Block</h2>
+<br><br>
+<h3>Challenge Brief:</h3>
 <img src="blockbrief.png" style="opacity:1;">
 <br>
+<h3>Downloadables:</h3>
 <img src="hwblockfiles.png">
 <p>
-Opening the .logicdata file in <a href="https://www.saleae.com/downloads/" title"Download page.">Salea Logicviewer</a>, we are presented with a single channel of data.
+Opening the .logicdata file in <a href="https://www.saleae.com/downloads/" title="Salea Logic download page">Salea Logicviewer</a>, we are presented with a single channel of data.
 Alone, this looks like nothing of interest. However, the brief states that <i>serial</i> communication had been intercepted. To try to find the protocol used, the <b>Async Serial</b> analyser was chosen from the <i>Analyzers</i> menu on the right-hand side.
 </p>
 
@@ -84,7 +91,7 @@ We are now presented with readable text, which notably begins with:<br>
 <b>Init"W25Q128FV" SPI"Comm..xy"sector:x,"page:y,"page_offset:xy</b>
 </p>
 <img src="waveform1.png">
-<br><br>
+<br>
 <img src="waveform2.png">
 <p>The above text is followed by pairs of integers separated by \r and \n. These are likely to be the values for X and Y. </p>
 <img src="waveform3.png">
@@ -97,13 +104,16 @@ From the datasheet, we can determine the sector and page size of the memory modu
 </p>
 <img src="spreadsheet.png">
 <p>
-Now it’s just a matter of loading up the dump.bin file in a binary file viewer and picking out the bytes from the calculated offsets. <a href="https://mh-nexus.de/en/hxd/">HxD</a> was used for this particular task.
+Now it’s just a matter of loading up the dump.bin file in a binary file viewer and picking out the bytes from the calculated offsets. <a href="https://mh-nexus.de/en/hxd/" title="HxD download page">HxD</a> was used for this particular task.
 </p>
 <img src="hxd.png">
 <br><br>
 <img src="solve.png">
 <br><br>
-<h2><i>fin.</i></h2>
+<h2>flag:</h2>
+<p><center>HTB{M3m0ry_5cR4mbl1N6_c4n7_54v3_y0u_th1S_t1M3}</center>
+</p>
+
 </div>
 </body>
 </html>
