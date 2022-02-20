@@ -4,9 +4,6 @@ title:  "HTB UNI CTF 2021 - Hardware Challenge: Block"
 date:   2021-05-05 21:27:45 +0000
 categories: htbunictf21
 ---
-# HTB UNI CTF 2020
-
-## Hardware Challenge: Block
 
 ### Challenge Brief:
 
