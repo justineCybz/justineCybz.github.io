@@ -6,7 +6,7 @@ categories: metasploitcommctf21
 ---
 
 
-navigating to 127.0.0.1:20055, we are met with a page for "Grant's Secure File Upload Server".
+Navigating to 127.0.0.1:20055, we are met with a page for "Grant's Secure File Upload Server".
 
 ![Untitled](Untitled.png){:class="img-responsive"}
 
