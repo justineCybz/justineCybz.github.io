@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-02-20T21:44:01+00:00</updated><id>http://localhost:4000/feed.xml</id><subtitle>This site is a documentation of my computer security learning journey.</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/jekyll/update/2022/02/20/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2022-02-20T20:27:45+00:00</published><updated>2022-02-20T20:27:45+00:00</updated><id>http://localhost:4000/jekyll/update/2022/02/20/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2022/02/20/welcome-to-jekyll.html"><![CDATA[<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+
+<p>Jekyll requires blog post files to be named according to the following format:</p>
+
+<p><code class="language-plaintext highlighter-rouge">YEAR-MONTH-DAY-title.MARKUP</code></p>
+
+<p>Where <code class="language-plaintext highlighter-rouge">YEAR</code> is a four-digit number, <code class="language-plaintext highlighter-rouge">MONTH</code> and <code class="language-plaintext highlighter-rouge">DAY</code> are both two-digit numbers, and <code class="language-plaintext highlighter-rouge">MARKUP</code> is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
+
+<p>Jekyll also offers powerful support for code snippets:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
+<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+
+<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. Jekyll requires blog post files to be named according to the following format: YEAR-MONTH-DAY-title.MARKUP Where YEAR is a four-digit number, MONTH and DAY are both two-digit numbers, and MARKUP is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts "Hi, #{name}" end print_hi('Tom') #=&gt; prints 'Hi, Tom' to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk.]]></summary></entry><entry><title type="html">9 of Spades port 20055</title><link href="http://localhost:4000/metasploitcommctf21/2021/12/05/metasploit-community-ctf-2021-9-of-spades.html" rel="alternate" type="text/html" title="9 of Spades port 20055" /><published>2021-12-05T20:27:45+00:00</published><updated>2021-12-05T20:27:45+00:00</updated><id>http://localhost:4000/metasploitcommctf21/2021/12/05/metasploit-community-ctf-2021:-9-of-spades</id><content type="html" xml:base="http://localhost:4000/metasploitcommctf21/2021/12/05/metasploit-community-ctf-2021-9-of-spades.html"><![CDATA[<p>navigating to 127.0.0.1:20055, we are met with a page for “Grant’s Secure File Upload Server”.</p>
+
+<p><img src="Untitled.png" alt="Untitled" class="img-responsive" /></p>
+
+<p>As the page states that the flag is located at root, a shell will likely be needed to access the root folder and as the website uses php, a php reverse shell would be a safe bet.</p>
+
+<p><code class="language-plaintext highlighter-rouge">cp /usr/share/webshells/php/php-reverse-shell.php</code></p>
+
+<p><img src="Untitled%201.png" alt="Untitled" class="img-responsive" /></p>
+
+<p>Change the $ip to the local IP address of the attacking machine, as the targets are on the same network.</p>
+
+<p><img src="Untitled%202.png" alt="Untitled" class="img-responsive" /></p>
+
+<p>Choose an available port. 443 was used as it is usually available for web shells.</p>
+
+<p>Now we have created our shell, we need to find a way to upload it.</p>
+
+<p>The source code for <em>upload.php</em> shows that many php file extensions have been blocked. We will need to use a different extension to bypass the block.</p>
+
+<p><img src="Untitled%203.png" alt="Untitled" /></p>
+
+<p><img src="Untitled%204.png" alt="Untitled" /></p>
+
+<p>Changing the file extension from <em>php</em> to <em>php12</em> worked to bypass the block.</p>
+
+<p>However, when attempting the access the file, we are now met with the source code being printed to the page rather than being executed by the server.</p>
+
+<p>This will need to be included in the .htaccess file for the local folder.</p>
+
+<p>Thankfully, this file upload allows for rewriting of existing files. We can just create a new .htaccess file with the necessary configuration to allow the execution of .php12 files!</p>
+
+<p><code class="language-plaintext highlighter-rouge">AddType application/x-httpd-php .php12</code></p>
+
+<p>When trying to access the reverse shell again we are now given the following errors:</p>
+
+<p><img src="Untitled%205.png" alt="Untitled" /></p>
+
+<p>This means the server has executed the shell but we need to set up the listener on the attacking machine.</p>
+
+<p><code class="language-plaintext highlighter-rouge">nc -lvnp 443</code></p>
+
+<p><img src="Untitled%206.png" alt="Untitled" /></p>
+
+<p>The flag is visible in the <code class="language-plaintext highlighter-rouge">ls</code> output!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">md5sum </span>flag.png
+270d4a0a9abc1c048102ff8b91f10927  flag.png
+</code></pre></div></div>]]></content><author><name></name></author><category term="metasploitcommctf21" /><summary type="html"><![CDATA[navigating to 127.0.0.1:20055, we are met with a page for “Grant’s Secure File Upload Server”.]]></summary></entry><entry><title type="html">HTB UNI CTF 2021 - Hardware Challenge: Block</title><link href="http://localhost:4000/htbunictf21/2021/05/05/hardware-block.html" rel="alternate" type="text/html" title="HTB UNI CTF 2021 - Hardware Challenge: Block" /><published>2021-05-05T22:27:45+01:00</published><updated>2021-05-05T22:27:45+01:00</updated><id>http://localhost:4000/htbunictf21/2021/05/05/hardware-block</id><content type="html" xml:base="http://localhost:4000/htbunictf21/2021/05/05/hardware-block.html"><![CDATA[<h1 id="htb-uni-ctf-2020">HTB UNI CTF 2020</h1>
+
+<h2 id="hardware-challenge-block">Hardware Challenge: Block</h2>
+
+<h3 id="challenge-brief">Challenge Brief:</h3>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled.png" alt="Untitled" /></p>
+
+<h3 id="downloadables">Downloadables:</h3>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%201.png" alt="Untitled" /></p>
+
+<p>Opening the <strong>.logicdata</strong> file in <a href="https://www.saleae.com/downloads/">Salea Logicviewer</a>, we are presented with a single channel of data. Alone, this looks like nothing of interest. However, the brief states that serial communication had been intercepted. To try to find the protocol used, the <strong>**Async Serial</strong> analyser was chosen from the <strong>Analyzers</strong> menu on the right-hand side.</p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%202.png" alt="Untitled" /></p>
+
+<p>This clearly shows there to be some legible sort of data when using this protocol.</p>
+
+<p>The framing errors were fixed by changing the parity bit from <strong>No Parity Bit</strong> to <strong>Even Parity Bit</strong> in the <strong>Async Serial</strong> settings.</p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%203.png" alt="Untitled" /></p>
+
+<p>To check for readable characters; from the <strong>Options</strong> menu in the top-right, change the <strong>Display Radix</strong> to <strong>ASCII</strong>.</p>
+
+<p>We are now presented with readable text, which notably begins with:
+<code class="language-plaintext highlighter-rouge">Init"W25Q128FV" SPI"Comm..xy"sector:x,"page:y,"page_offset:xy</code></p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%204.png" alt="Untitled" /></p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%205.png" alt="Untitled" /></p>
+
+<p>The above text is followed by pairs of integers separated by <strong>\r</strong> and <strong>\n</strong>. These are likely to be the values for <strong>X</strong> and <strong>Y</strong>.</p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%206.png" alt="Untitled" /></p>
+
+<p><strong>W25Q128FV</strong> appears to be a flash memory module made by Winbond, who provide a datasheet for the module, here: <a href="https://www.winbond.com/resource-files/w25q128fv_revhh1_100913_website1.pdf">https://www.winbond.com/resource-files/w25q128fv_revhh1_100913_website1.pdf</a></p>
+
+<p>From the datasheet, we can determine the sector and page size of the memory module, to properly calculate the addresses of the data from the X and Y values:</p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%207.png" alt="Untitled" /></p>
+
+<p>To determine the addresses of each sector and page file, a spreadsheet was used to note down the XY pairs and calculate the corresponding sector address and page address. These were then combined, along with the offset value to provide the byte address.</p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%208.png" alt="Untitled" /></p>
+
+<p>Now it’s just a matter of loading up the <strong>dump.bin</strong> file in a binary file viewer and picking out the bytes from the calculated offsets. <strong><a href="https://mh-nexus.de/en/hxd/">HxD</a></strong> was used for this particular task.</p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%209.png" alt="Untitled" /></p>
+
+<p><img src="HTBUNICTF2%20d4ff1/Untitled%2010.png" alt="Untitled" /></p>
+
+<h3 id="flag">flag:</h3>
+
+<p>HTB{M3m0ry_5cR4mbl1N6_c4n7_54v3_y0u_th1S_t1M3}</p>]]></content><author><name></name></author><category term="htbunictf21" /><summary type="html"><![CDATA[HTB UNI CTF 2020]]></summary></entry></feed>
