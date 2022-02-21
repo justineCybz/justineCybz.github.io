@@ -28,7 +28,7 @@ To check for readable characters; from the **Options** menu in the top-right, ch
 We are now presented with readable text, which notably begins with:
 `Init"W25Q128FV" SPI"Comm..xy"sector:x,"page:y,"page_offset:xy`
 
-![Untitled](/assets/img/hardware-block-5.png)
+![Untitled]({{site.baseurl}}/assets/img/hardware-block-5.png)
 
 ![Untitled](/assets/img/hardware-block-6.png)
 
