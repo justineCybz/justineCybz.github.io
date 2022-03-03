@@ -1,0 +1,91 @@
+<html>
+
+<head>
+    <title>HTB-UNI-CTF Block Write-up</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div id="menu">
+        <h2>CTF Write-Ups</h2>
+        <p>Metasploit Community CTF 2021
+            <ul>
+                <li><a href="9spades.html">Port 20055 - 9 of Spades</a></li>
+                <li><a href="4clubs.html">Port 15010 - 4 of Clubs</a></li>
+            </ul>
+        </p>
+        <p>Hack The Box CTF 2020
+            <ul>
+                <li><a href="block.html">Hardware - Block</a></li>
+            </ul>
+
+        </p>
+    </div>
+    <div id="container">
+        <h2>Metasploit Community CTF</h2>
+        <h1>Port 15010 - 4 of Clubs</h1>
+        <br><br>
+        <p>Go to <strong>http://{Target-IP}:15010</strong> in your browser.</p>
+        <p><center><img src="assets\images\4clubs\0.png" alt="Index page of **http://{Target-IP}:15010**"></center>
+        <small>Index page of http://{Target-IP}:15010</small></p>
+        <p><strong>Register</strong> a user on the site and <strong>log in</strong>.</p>
+        <p><center><img src="assets\images\4clubs\1.png" alt="The user&#39;s My Files page"></center>
+        <small>The user&#39;s My Files page</p></small>
+        <p>You will be redirected to the <strong>My Files</strong> page where you can upload files.</p>
+        <p>Uploading a file called userlist.txt resulted in a file called userlist being saved to the
+            <strong>/users/{username}/files/</strong> directory.</p>
+        <p><img src="assets\images\4clubs\2.png" alt="My Files page with link to uploaded file."><br>
+            <small>My Files page with link to uploaded file.</small></p>
+        <p>When navigating to <strong>/users/test/files</strong> we are redirected to the <strong>My Files</strong>
+            page.</p>
+        <p>What happens if we try with another user, such as <strong>test2</strong>?</p>
+        <p><img src="assets\images\4clubs\4.png" alt="Untitled"></p>
+        <p>We are presented with a &quot;Not found&quot; message.</p>
+        <p>How about if we try a username which likely exists, such as &quot;<strong>admin</strong>&quot;?</p>
+        <p>When trying to access <strong>/users/admin/files</strong>, we are redirected back to our <strong>My
+                Files</strong> page.</p>
+        <p>This unique behaviour means the username likely exists, which means we can try fuzzing the
+            <strong>users</strong> directory for other users, or try fuzzing admin&#39;s <strong>files</strong>
+            directory for files.</p>
+        <p>To fuzz for files, we will first need to obtain the cookie data and User-Agent header for our fuzz requests.
+        </p>
+        <p><em>Note: (The User-Agent header was discovered as a requisite through trial-and-error with the fuzzer
+                tool.)</em></p>
+        <p>This was done by intercepting a request to <strong>{Target-IP}/users/admin/files/test</strong> with
+            BurpSuite.</p>
+        <p><img src="assets\images\4clubs\3.png" alt="Intercepting target machine port 15010 /users/admin/files/test ">
+            <br>
+            <small>Intercepting target machine port 15010 /users/admin/files/test</small> </p>
+        <p>ffuf was then used to fuzz the target:</p>
+        <p><code>ffuf -w {wordlist} -u http://{Target-IP}:15010/users/admin/files/FUZZ -b &quot;{cookie} -t 10 -H
+                &quot;{User-Agent}&quot;</code></p>
+                <center><img src="assets\images\4clubs\6.PNG" alt="Output of ffuf"></center>
+    <small>Output from ffuf when fuzzing admin files directory</small></p>
+    <center><img src="assets\images\4clubs\7.PNG" alt="Found files - two cute dog pictures."></center>    
+
+        <p>We discovered some new files, but they are just cute pictures of dogs!</p>
+        <p>However, since we now know we can view other user&#39;s files, we can also fuzz for other users.</p>
+        <p><code>ffuf -w {wordlist} -u http://{Target-IP}:15010/users/FUZZ/files/ -b &quot;{cookie} -t 10 -H
+                &quot;{User-Agent}</code></p>
+
+                <center><img src="assets\images\4clubs\8.PNG"></center>
+        <small>Output from ffuf for fuzzing usernames.</small>
+        <p>Four additional users were found.</p>
+        <p>Fuzzing each of these usernames resulted in a couple more files being found per user, most of which were
+            unimportant.</p>
+        <p>However, the <strong>employee</strong> user had a file called <strong>fileadmin</strong> **which happened to
+            be the flag!</p>
+            <center><img src="assets\images\4clubs\9.PNG"></center>
+        <small>Fuzzing employee user's files</small>
+        <p>
+            <center><img src="assets\images\4clubs\10.png" alt="The fileadmin flag file"></center>
+        <small>The fileadmin flag file</small></p>
+        <pre><code class="lang-bash">└─$ md5sum fileadmin
+<span class="hljs-number">1839</span>e6ea9477521edab0a<span class="hljs-number">19979d20b29</span>  fileadmin
+</code></pre>
+
+
+    </div>
+</body>
+
+</html>
