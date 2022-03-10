@@ -94,7 +94,7 @@ var
 <blockquote>
 <p>What is the value found in /flag2.txt on the second container, &quot;mysql&quot;?</p>
 </blockquote>
-<p>When looking through the files in the previous folder /app, there was a file called ‘db.py’. This file contained plaintext credentials for a mysql server. Attempting to connect to the mysql server using <code>mysql -h db -u root -p NiftySkyPlantedWorry</code> unfortunately does not work. What if we were to try these credentials for another service instead, such as SSH? It is common for lazy administrators to reuse the same passwords for multiple services, so it’s worth a shot?</p>
+<p>When looking through the files in the previous folder /app, there was a file called ‘db.py’. This file contained plaintext credentials for a mysql server. Attempting to connect to the mysql server using <code>mysql -h db -u root -p ###################</code> unfortunately does not work. What if we were to try these credentials for another service instead, such as SSH? It is common for lazy administrators to reuse the same passwords for multiple services, so it’s worth a shot?</p>
 <pre><code class="lang-bash">root@webapp<span class="hljs-symbol">:/app</span><span class="hljs-comment"># ssh root<span class="hljs-doctag">@db</span></span>
 ssh root@db
 Pseudo-terminal will <span class="hljs-keyword">not</span> be allocated because stdin is <span class="hljs-keyword">not</span> a terminal.
