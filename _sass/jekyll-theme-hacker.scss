@@ -61,13 +61,13 @@ header {
 }
 
 header h1 {
-  font-size: 80px;
+  font-size: 50px;
   line-height: 1.5;
   margin: 0 0 0 -40px;
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   color: transparent;
-  text-shadow: 0px 0px 3px #eee, 3px 3px 1px teal, -3px -1px 1px mix(black,magenta,50);
+  text-shadow: 0px 0px 2px #eee, 3px 3px 1px teal, -3px -1px 1px mix(black,magenta,50);
   font-weight: 400;
 }
 
@@ -132,7 +132,7 @@ h1, h2, h3, h4, h5, h6 {
 #main_content h6 {
   font-size: 12px;
   text-transform: uppercase;
-  color: #999;
+  color: #999;  border-radius: 2px;
   margin: 0 0 5px 0;
 }
 
