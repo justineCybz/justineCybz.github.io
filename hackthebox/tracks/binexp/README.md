@@ -1,12 +1,12 @@
 # Intro to Binary Exploitation
 
-These are my writeups for the Hack the Box challenge track [Intro to Binary Exploitation](https://app.hackthebox.com/tracks/Intro-to-Binary-Exploitation).
+These are my writeups for the Hack the Box challenge track Intro to Binary Exploitation.
 
-- [x] [Jeeves](./jeeves.md)
-- [x] [Bat Computer](./batcomp.md)
-- [x] Optimistic
-- [x] [Reg](./reg.md)
-- [ ] HTB Console
+- [x] [Jeeves](/hackthebox/challenges/pwn/jeeves)
+- [x] [Bat Computer](/hackthebox/challenges/pwn/batcomp)
+- [x] [Optimistic](/hackthebox/challenges/pwn/optimistic)
+- [x] [Reg](/hackthebox/challenges/pwn/reg)
+- [x] [HTB Console](/hackthebox/challenges/pwn/htb-console)
 - [ ] PwnShop
 - [ ] Leet Test
 - [ ] Nightmare

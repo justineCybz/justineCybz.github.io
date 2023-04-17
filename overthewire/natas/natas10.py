@@ -13,9 +13,4 @@ r = requests.post('http://natas10.natas.labs.overthewire.org', auth=(username, p
 soup = BeautifulSoup(r.text, "html.parser")
 text = soup.find("span").string
 print(text)
-#print(r.text)
-#encoded = encoded[::-1]
-#encoded = encoded.hex()
-#encoded = str(bin(int(encoded, 16)))
-#print(encoded)
-#print(r.cookies['loggedIn'])
+
