@@ -1,17 +1,17 @@
 # OverTheWire/Natas
 I have been tackling the Natas web application challenges solely using Python, as a fun challenge, to strengthen my skills and for my love of scripting!
 
-- [x] Level 0
-- [x] Level 0 → Level 1
-- [x] Level 1 → Level 2
-- [x] Level 2 → Level 3
-- [x] Level 3 → Level 4
-- [x] Level 4 → Level 5
-- [x] Level 5 → Level 6
-- [x] Level 6 → Level 7
-- [x] Level 7 → Level 8
-- [x] Level 8 → Level 9
-- [x] Level 9 → Level 10
+- [x] [Level 0](./natas0.py)
+- [x] [Level 0 → Level 1](./natas1.py)
+- [x] [Level 1 → Level 2](./natas2.py)
+- [x] [Level 2 → Level 3](./natas3.py)
+- [x] [Level 3 → Level 4](./natas4.py)
+- [x] [Level 4 → Level 5](./natas5.py)
+- [x] [Level 5 → Level 6](./natas6.py)
+- [x] [Level 6 → Level 7](./natas7.py)
+- [x] [Level 7 → Level 8](./natas8.py)
+- [x] [Level 8 → Level 9](./natas9.py)
+- [x] [Level 9 → Level 10](./natas10.py)
 - [x] Level 10 → Level 11
 - [ ] Level 11 → Level 12
 - [ ] Level 12 → Level 13
